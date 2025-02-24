@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 
 const Recipes = () => {
@@ -24,7 +25,7 @@ const Recipes = () => {
                             "https://images.unsplash.com/photo-1551024709-8f23befc6f87",
                             "https://images.unsplash.com/photo-1551024709-8f23befc6f87"
                         ].map((imgSrc, index) => (
-                            <div key={index} className="card bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition">
+                            <Link key={index} href={`/details/{${index}`} className="card bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition">
                                 <div className="w-full h-48 overflow-hidden rounded-md">
                                     <img src={imgSrc} className="w-full h-full object-cover" alt="" />
                                 </div>
@@ -33,7 +34,7 @@ const Recipes = () => {
                                     <span>⭐️ 5.0</span>
                                     <span>By: John Doe</span>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>
