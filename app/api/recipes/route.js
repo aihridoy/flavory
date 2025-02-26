@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
 import { dbConnect } from '@/service/mongo';
 import { Recipe } from '@/models/recipe-model';
 
