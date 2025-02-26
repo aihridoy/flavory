@@ -1,10 +1,10 @@
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
-import React from "react";
+import Footer from '@/components/Footer';
+import Navbar from '@/components/Navbar';
+import React from 'react';
 
-const Page = () => {
-  return (
-    <>
+const page = () => {
+    return (
+        <>
       <Navbar />
       <main>
         <section>
@@ -199,7 +199,7 @@ const Page = () => {
       </main>
       <Footer />
     </>
-  );
+    );
 };
 
-export default Page;
+export default page;

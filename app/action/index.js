@@ -18,3 +18,25 @@ export const fetchRecipes = async () => {
       return { success: false, message: error.message };
     }
   };
+
+  export const fetchRecipeById = async (id) => {
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipes/${id}`, 
+            {
+                method: 'GET',
+                cache: 'no-store',
+            }
+        );
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || "Failed to fetch recipe");
+        }
+
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching recipe:", error);
+        return { success: false, message: error.message };
+    }
+};
