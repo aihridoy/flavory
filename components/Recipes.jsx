@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { fetchRecipes } from "@/app/action";
+import Image from "next/image";
+import Recipe from "./Recipe";
 
 const Recipes = () => {
   const [recipes, setRecipes] = useState([]);
@@ -74,28 +75,7 @@ const Recipes = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
               {recipes.map((recipe) => {
-                return (
-                  <Link
-                    key={recipe?._id}
-                    href={`/recipes/${recipe?._id}`}
-                    className="card bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition"
-                  >
-                    <div className="w-full h-48 overflow-hidden rounded-md">
-                      <img
-                        src={recipe?.thumbnail}
-                        className="w-full h-full object-cover"
-                        alt=""
-                      />
-                    </div>
-                    <h4 className="my-2 font-semibold text-gray-800">
-                      {recipe?.name}
-                    </h4>
-                    <div className="py-2 flex justify-between text-xs text-gray-500">
-                      <span>⭐️ {recipe?.rating}</span>
-                      <span>By: {recipe?.author}</span>
-                    </div>
-                  </Link>
-                );
+                return <Recipe recipe={recipe} />;
               })}
             </div>
           )}
