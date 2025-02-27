@@ -3,13 +3,14 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { fetchRecipes } from "@/app/action";
-import Image from "next/image";
 import Recipe from "./Recipe";
 
 const Recipes = () => {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const recipesPerPage = 9;
 
   useEffect(() => {
     const getRecipes = async () => {
@@ -26,9 +27,13 @@ const Recipes = () => {
         setLoading(false);
       }
     };
-
     getRecipes();
   }, []);
+
+  const indexOfLastRecipe = currentPage * recipesPerPage;
+  const indexOfFirstRecipe = indexOfLastRecipe - recipesPerPage;
+  const currentRecipes = recipes.slice(indexOfFirstRecipe, indexOfLastRecipe);
+  const totalPages = Math.ceil(recipes.length / recipesPerPage);
 
   return (
     <section className="container py-8">
@@ -53,7 +58,6 @@ const Recipes = () => {
             </li>
           </ul>
         </div>
-
         <div className="col-span-12 md:col-span-9">
           {error && <p className="text-red-500">{error}</p>}
           {loading ? (
@@ -73,11 +77,47 @@ const Recipes = () => {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
-              {recipes.map((recipe) => {
-                return <Recipe recipe={recipe} />;
-              })}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-8">
+                {currentRecipes.map((recipe) => (
+                  <Recipe key={recipe._id} recipe={recipe} />
+                ))}
+              </div>
+              {totalPages > 1 && (
+                <div className="flex justify-center mt-8 gap-4">
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    className={`px-4 py-2 bg-gray-200 rounded-md ${
+                      currentPage === 1
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-gray-300"
+                    }`}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </button>
+
+                  <span className="px-4 py-2 bg-gray-100 rounded-md">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                    className={`px-4 py-2 bg-gray-200 rounded-md ${
+                      currentPage === totalPages
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-gray-300"
+                    }`}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
