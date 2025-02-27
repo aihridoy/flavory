@@ -82,7 +82,7 @@ const Recipes = () => {
                   >
                     <div className="w-full h-48 overflow-hidden rounded-md">
                       <img
-                        src={recipe?.image}
+                        src={recipe?.thumbnail}
                         className="w-full h-full object-cover"
                         alt=""
                       />

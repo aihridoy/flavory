@@ -1,32 +1,74 @@
-import Footer from '@/components/Footer';
-import Navbar from '@/components/Navbar';
-import React from 'react';
+"use client";
 
-const page = () => {
+import { fetchRecipeById } from "@/app/action";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
+
+const page = ({ params }) => {
+  const { id } = params;
+  const [recipe, setRecipe] = useState(null);
+  const [loading, setLoading] = useState(true);
+  console.log(recipe?.data);
+  const {
+    name,
+    author,
+    category,
+    description,
+    image,
+    serves,
+    activeTime,
+    totalTime,
+    steps,
+  } = recipe?.data || {};
+
+  useEffect(() => {
+    const getRecipe = async () => {
+      try {
+        const data = await fetchRecipeById(id);
+        setRecipe(data);
+      } catch (error) {
+        console.error("Error fetching recipe:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) getRecipe();
+  }, [id]);
+
+  if (loading) {
     return (
-        <>
+      <div className="flex justify-center items-center h-screen">
+        <span className="animate-spin rounded-full h-40 w-40 border-t-2 border-b-2 border-gray-900"></span>
+      </div>
+    );
+  }
+  if (!recipe) return <p>Recipe not found</p>;
+
+  return (
+    <>
       <Navbar />
       <main>
         <section>
           <div className="grid grid-cols-12 container gap-8 justify-items-center">
             <div className="col-span-12 md:col-span-6">
-              <img
-                src="https://images.unsplash.com/photo-1529042410759-befb1204b468"
+              <Image
+                src={image}
                 alt="Food item"
+                width={500}
+                height={500}
                 className="w-full h-full rounded-lg object-contain"
               />
             </div>
             <div className="col-span-12 md:col-span-6 py-8 flex flex-col justify-center">
               <h2 className="font-semibold text-4xl lg:w-8/12 leading-10">
-                White calzones with marinara sauce
+                {name}
               </h2>
-              <p className="text-xs text-[#eb4a36] italic my-2">
-                Breakfast and Brunch
-              </p>
+              <p className="text-xs text-[#eb4a36] italic my-2">{category}</p>
               <p className="text-gray-600 text-sm my-6 leading-6">
-                Supermarket brands of ricotta contain stabilizers, which can
-                give the cheese a gummy texture when baked. Check the label and
-                choose ricotta made with as few ingredients as possible.
+                {description}
               </p>
 
               <div className="flex gap-4 justify-center divide-x my-12">
@@ -50,7 +92,7 @@ const page = () => {
                   <h3 className="font-medium text-lg text-gray-700 mt-2">
                     Prep time
                   </h3>
-                  <p className="text-gray-500 text-sm">30 minutes</p>
+                  <p className="text-gray-500 text-sm">{activeTime}</p>
                 </div>
                 <div className="flex-1 text-center">
                   <svg
@@ -73,7 +115,7 @@ const page = () => {
                   <h3 className="font-medium text-lg text-gray-700 mt-2">
                     Cook time
                   </h3>
-                  <p className="text-gray-500 text-sm">1 hour</p>
+                  <p className="text-gray-500 text-sm">{totalTime}</p>
                 </div>
                 <div className="flex-1 text-center">
                   <svg
@@ -97,7 +139,7 @@ const page = () => {
                   <h3 className="font-medium text-lg text-gray-700 mt-2">
                     Servings
                   </h3>
-                  <p className="text-gray-500 text-sm">4</p>
+                  <p className="text-gray-500 text-sm">{serves}</p>
                 </div>
               </div>
 
@@ -147,59 +189,20 @@ const page = () => {
         </section>
 
         <section>
-          <div class="container py-12">
-            <h3 class="font-semibold text-xl py-6">How to Make it</h3>
-            <div>
-              <div class="step">
-                <h3>Step 1</h3>
-                <p>
-                  Labour, of evaluated would he the a the our what is in the
-                  arduous sides behavioural is which the have didn't kicked
-                  records the it framework by the for traveler sure the can most
-                  well her. Entered have break himself cheek, and activity, for
-                  bit of text.
-                </p>
+          <div className="container py-12">
+            <h3 className="font-semibold text-xl py-6">How to Make it</h3>
+            {steps?.map((step, index) => (
+              <div key={index} className="step">
+                <h3>Step {index + 1}</h3>
+                <p>{step}</p>
               </div>
-
-              <div class="step">
-                <h3>Step 2</h3>
-                <p>
-                  Labour, of evaluated would he the a the our what is in the
-                  arduous sides behavioural is which the have didn't kicked
-                  records the it framework by the for traveler sure the can most
-                  well her. Entered have break himself cheek, and activity, for
-                  bit of text.
-                </p>
-              </div>
-
-              <div class="step">
-                <h3>Step 3</h3>
-                <p>
-                  Labour, of evaluated would he the a the our what is in the
-                  arduous sides behavioural is which the have didn't kicked
-                  records the it framework by the for traveler sure the can most
-                  well her. Entered have break himself cheek, and activity, for
-                  bit of text.
-                </p>
-              </div>
-
-              <div class="step">
-                <h3>Step 4</h3>
-                <p>
-                  Labour, of evaluated would he the a the our what is in the
-                  arduous sides behavioural is which the have didn't kicked
-                  records the it framework by the for traveler sure the can most
-                  well her. Entered have break himself cheek, and activity, for
-                  bit of text.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
       </main>
       <Footer />
     </>
-    );
+  );
 };
 
 export default page;
