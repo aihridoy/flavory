@@ -40,3 +40,21 @@ export const fetchRecipes = async () => {
         return { success: false, message: error.message };
     }
 };
+
+export const fetchRecipesByCategory = async (categoryName) => {
+  try {
+    const encodedCategory = encodeURIComponent(categoryName);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipes/category/${encodedCategory}`);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch recipes by category");
+    }
+
+    const data = await response.json();
+    return data; 
+  } catch (error) {
+    console.error("Error fetching recipes by category:", error);
+    return { success: false, message: error.message };
+  }
+};
