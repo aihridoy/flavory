@@ -30,6 +30,8 @@ const Recipes = () => {
     getRecipes();
   }, []);
 
+  const categories = [...new Set(recipes.map((recipe) => recipe.category))];
+
   const indexOfLastRecipe = currentPage * recipesPerPage;
   const indexOfFirstRecipe = indexOfLastRecipe - recipesPerPage;
   const currentRecipes = recipes.slice(indexOfFirstRecipe, indexOfLastRecipe);
@@ -39,25 +41,24 @@ const Recipes = () => {
     <section className="container py-8">
       <div className="grid grid-cols-12 py-4">
         <div className="col-span-12 md:col-span-3">
-          <h3 className="font-bold text-xl">Recipes</h3>
-          <ul className="pl-2 my-6 space-y-4 text-gray-500 text-sm">
-            <li>
-              <a href="#">Morning Bliss Café</a>
-            </li>
-            <li>
-              <a href="#">Sunrise Bites Kitchen</a>
-            </li>
-            <li>
-              <a href="#">Brunch Haven Delights</a>
-            </li>
-            <li>
-              <a href="#">Rise & Dine Eatery</a>
-            </li>
-            <li>
-              <a href="#">Breakfast Oasis Junction</a>
-            </li>
-          </ul>
+          <h3 className="font-bold text-xl">Categories</h3>
+          {loading ? (
+            <p className="text-gray-500 mt-4">Loading categories...</p>
+          ) : (
+            <ul className="pl-2 my-6 space-y-4 text-gray-500 text-sm">
+              {categories.length > 0 ? (
+                categories.map((category, index) => (
+                  <li key={index}>
+                    <a href="#" className="hover:text-gray-800">{category}</a>
+                  </li>
+                ))
+              ) : (
+                <p className="text-gray-500">No categories found.</p>
+              )}
+            </ul>
+          )}
         </div>
+
         <div className="col-span-12 md:col-span-9">
           {error && <p className="text-red-500">{error}</p>}
           {loading ? (
@@ -86,30 +87,21 @@ const Recipes = () => {
               {totalPages > 1 && (
                 <div className="flex justify-center mt-8 gap-4">
                   <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                     className={`px-4 py-2 bg-gray-200 rounded-md ${
-                      currentPage === 1
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-gray-300"
+                      currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-300"
                     }`}
                     disabled={currentPage === 1}
                   >
                     Previous
                   </button>
-
                   <span className="px-4 py-2 bg-gray-100 rounded-md">
                     Page {currentPage} of {totalPages}
                   </span>
                   <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                     className={`px-4 py-2 bg-gray-200 rounded-md ${
-                      currentPage === totalPages
-                        ? "opacity-50 cursor-not-allowed"
-                        : "hover:bg-gray-300"
+                      currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-300"
                     }`}
                     disabled={currentPage === totalPages}
                   >
