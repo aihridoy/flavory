@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { fetchRecipes } from "@/app/action";
 import Recipe from "./Recipe";
+import Link from "next/link";
 
 const Recipes = () => {
   const [recipes, setRecipes] = useState([]);
@@ -49,7 +50,7 @@ const Recipes = () => {
               {categories.length > 0 ? (
                 categories.map((category, index) => (
                   <li key={index}>
-                    <a href="#" className="hover:text-gray-800">{category}</a>
+                    <Link href={`/recipes/category/${category}`} className="hover:text-gray-800">{category}</Link>
                   </li>
                 ))
               ) : (
