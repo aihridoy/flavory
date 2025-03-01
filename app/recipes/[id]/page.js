@@ -10,7 +10,6 @@ const page = ({ params }) => {
   const { id } = params;
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
-  console.log(recipe?.data);
   const {
     name,
     author,
