@@ -59,3 +59,26 @@ export const fetchRecipesByCategory = async (categoryName) => {
     return { success: false, message: error.message };
   }
 };
+
+export const registerUser = async (userData) => {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Registration failed");
+    }
+
+    return data; 
+  } catch (error) {
+    console.error("Error registering user:", error);
+    return { success: false, message: error.message };
+  }
+};
