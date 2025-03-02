@@ -88,13 +88,10 @@ export const registerUser = async (userData) => {
 
 export const loginUser = async (credentials) => {
   try {
-    console.log("Attempting to login with:", credentials);
-
     const result = await signIn("credentials", {
       ...credentials,
       redirect: false, 
     });
-    console.log("SignIn result:", result);
     if (!result || result.error) {
       throw new Error(result?.error || "Invalid email or password");
     }
@@ -112,5 +109,53 @@ export const logoutUser = async () => {
   } catch (error) {
     console.error("Error logging out:", error);
     return { success: false, message: error.message || "Logout failed" };
+  }
+};
+
+export const addToFavorites = async (userId, recipe) => {
+  try {
+    const { name, image, author, rating } = recipe;
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/favorites`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId, name, image, author, rating }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to add recipe to favorites');
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const checkIfFavorited = async (userId, name) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/favorites?userId=${userId}&name=${encodeURIComponent(name)}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to check favorite status');
+    }
+
+    return { success: true, isFavorited: data.isFavorited };
+  } catch (error) {
+    return { success: false, message: error.message };
   }
 };
