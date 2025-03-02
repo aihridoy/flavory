@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { dbConnect } from '@/service/mongo';
 import { User } from '@/models/user-model';
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
 
-const SALT_ROUNDS = 10;
+// const SALT_ROUNDS = 10;
 
 export async function POST(request) {
   try {
@@ -32,13 +32,13 @@ export async function POST(request) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+    // const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
     const newUser = new User({
       firstName,
       lastName,
       email,
-      password: hashedPassword,
+      password, // Store plain text password temporarily (not secure for production)
     });
 
     await newUser.save();
