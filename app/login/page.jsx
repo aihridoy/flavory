@@ -9,6 +9,7 @@ const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -22,11 +23,13 @@ const LoginPage = () => {
 
     const result = await loginUser(formData);
 
+    if (!result.success) {
+      setError("Invalid email or password. Please try again.");
+    }
+
     if (result.success) {
       setMessage("✅ Login successful! Redirecting...");
       setTimeout(() => router.push("/"), 1500);
-    } else {
-      setMessage(result.message);
     }
 
     setLoading(false);
@@ -35,7 +38,9 @@ const LoginPage = () => {
   return (
     <section className="h-screen grid place-items-center">
       <div className="max-w-[450px] w-full mx-auto p-6 border border-gray-700/20 rounded-md shadow-md">
-        <h4 className="font-bold text-2xl text-center">Sign in</h4>
+        <h4 className="font-bold text-2xl mb-5">Sign in</h4>
+
+        {error && <p className="text-center text-sm my-2 text-red-500">{error}</p>}
 
         {message && (
           <p

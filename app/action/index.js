@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-"use client";
 
 import { signIn, signOut } from "next-auth/react";
 
@@ -93,15 +92,12 @@ export const loginUser = async (credentials) => {
 
     const result = await signIn("credentials", {
       ...credentials,
-      redirect: false,
+      redirect: false, 
     });
-
     console.log("SignIn result:", result);
-
-    if (!result || !result.ok) {
+    if (!result || result.error) {
       throw new Error(result?.error || "Invalid email or password");
     }
-
     return { success: true, message: "Login successful!" };
   } catch (error) {
     console.error("Error logging in:", error);
