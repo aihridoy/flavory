@@ -22,7 +22,7 @@ const Recipes = () => {
         } else {
           setError(result.message);
         }
-      } catch (err) {
+      } catch {
         setError("Something went wrong!");
       } finally {
         setLoading(false);
