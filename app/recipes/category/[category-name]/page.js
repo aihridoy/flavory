@@ -38,14 +38,14 @@ const Page = ({ params }) => {
     <>
       <Navbar />
       <main>
-        <section className="container py-8">
+        <section className="container py-14">
           <div>
             <h3 className="font-semibold text-2xl text-gray-800">
               {decodeURIComponent(categoryName)} Recipes
             </h3>
 
             {loading && (
-              <div className="flex justify-center items-center mt-32 mb-32">
+              <div className="flex justify-center items-center mt-36 mb-36">
                 <span className="animate-spin rounded-full h-40 w-40 border-t-2 border-b-2 border-gray-900"></span>
               </div>
             )}

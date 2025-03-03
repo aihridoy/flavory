@@ -36,7 +36,7 @@ const Navbar = () => {
           {[
             { name: "Home", path: "/" },
             { name: "Recipe", path: "/categorized" },
-            { name: "About Us", path: "/about" },
+            { name: "About Us", path: "/about-us" },
           ].map((menu) => (
             <li key={menu.path} className="py-2">
               <Link
