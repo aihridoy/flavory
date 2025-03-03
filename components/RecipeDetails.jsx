@@ -148,7 +148,7 @@ const RecipeDetails = ({ recipe }) => {
               <div className="flex gap-4">
                 <FacebookShareButton
                   url={shareUrl}
-                  hashtag="#recipe"
+                  hashtag={name}
                 >
                   <FacebookIcon
                     className="transition-transform transform hover:scale-110"
@@ -156,7 +156,7 @@ const RecipeDetails = ({ recipe }) => {
                     round
                   />
                 </FacebookShareButton>
-                <TwitterShareButton url={shareUrl}>
+                <TwitterShareButton url={shareUrl} hashtag={name}>
                   <TwitterIcon
                     className="transition-transform transform hover:scale-110"
                     size={28}
@@ -165,6 +165,7 @@ const RecipeDetails = ({ recipe }) => {
                 </TwitterShareButton>
                 <WhatsappShareButton
                   url={shareUrl}
+                  hashtag={name}
                   separator=":: "
                 >
                   <WhatsappIcon
