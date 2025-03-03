@@ -3,6 +3,8 @@ import { addToFavorites, checkIfFavorited } from "@/app/action";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RecipeDetails = ({ recipe }) => {
   const { data: session } = useSession();
@@ -37,7 +39,7 @@ const RecipeDetails = ({ recipe }) => {
 
   const handleAddToFavorites = async () => {
     if (!userId) {
-      alert("You need to be logged in to add favorites.");
+      toast.error("You need to be logged in to add favorites.");
       return;
     }
 
@@ -52,9 +54,9 @@ const RecipeDetails = ({ recipe }) => {
 
     if (response.success) {
       setIsFavorited(true);
-        alert('Recipe added to favorites successfully.');
+      toast.success("Recipe added to favorites successfully!");
     } else {
-      alert(response.message);
+      toast.error(response.message);
     }
   };
 
@@ -139,6 +141,9 @@ const RecipeDetails = ({ recipe }) => {
           </div>
         </div>
       </div>
+
+      {/* Toast Container */}
+      <ToastContainer position="top-right" autoClose={3000} />
     </section>
   );
 };
