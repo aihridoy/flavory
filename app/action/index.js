@@ -4,7 +4,7 @@ import { signIn, signOut } from "next-auth/react";
 
 export const fetchRecipes = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipes`, 
+      const response = await fetch(`/api/recipes`, 
         {
             method: 'GET',
             cache: 'no-store',
@@ -48,7 +48,7 @@ export const fetchRecipes = async () => {
 export const fetchRecipesByCategory = async (categoryName) => {
   try {
     const encodedCategory = encodeURIComponent(categoryName);
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/recipes/category/${encodedCategory}`);
+    const response = await fetch(`/api/recipes/category/${encodedCategory}`);
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -65,7 +65,7 @@ export const fetchRecipesByCategory = async (categoryName) => {
 
 export const registerUser = async (userData) => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/register`, {
+    const response = await fetch(`/api/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -116,7 +116,7 @@ export const addToFavorites = async (userId, recipe) => {
   try {
     const { name, image, author, rating } = recipe;
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/favorites`, {
+    const response = await fetch(`/api/favorites`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -139,7 +139,7 @@ export const addToFavorites = async (userId, recipe) => {
 export const checkIfFavorited = async (userId, name) => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/favorites?userId=${userId}&name=${encodeURIComponent(name)}`,
+      `/api/favorites?userId=${userId}&name=${encodeURIComponent(name)}`,
       {
         method: 'GET',
         headers: {
