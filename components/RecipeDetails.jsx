@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 "use client";
 
@@ -21,6 +22,7 @@ const RecipeDetails = ({ recipe }) => {
   const userId = session?.user?.id;
 
   const {
+    _id="",
     name = "",
     category = "",
     description = "",
@@ -71,9 +73,8 @@ const RecipeDetails = ({ recipe }) => {
   };
 
   // URL to share (current page URL)
-  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
-  const shareTitle = `${name} - A delicious recipe`;
-  const shareDescription = description.slice(0, 100);
+  const shareUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/recipes/${_id}`
+
 
   return (
     <section>
@@ -147,7 +148,6 @@ const RecipeDetails = ({ recipe }) => {
               <div className="flex gap-4">
                 <FacebookShareButton
                   url={shareUrl}
-                  quote={shareDescription}
                   hashtag="#recipe"
                 >
                   <FacebookIcon
@@ -156,7 +156,7 @@ const RecipeDetails = ({ recipe }) => {
                     round
                   />
                 </FacebookShareButton>
-                <TwitterShareButton url={shareUrl} title={shareTitle}>
+                <TwitterShareButton url={shareUrl}>
                   <TwitterIcon
                     className="transition-transform transform hover:scale-110"
                     size={28}
@@ -165,7 +165,6 @@ const RecipeDetails = ({ recipe }) => {
                 </TwitterShareButton>
                 <WhatsappShareButton
                   url={shareUrl}
-                  title={shareTitle}
                   separator=":: "
                 >
                   <WhatsappIcon
