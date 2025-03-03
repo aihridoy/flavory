@@ -1,42 +1,42 @@
-"use client";
-
+/* eslint-disable react/prop-types */
+import React from "react";
 import { fetchRecipeById } from "@/app/action";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import RecipeDetails from "@/components/RecipeDetails";
-import React, { useEffect, useState } from "react";
 
-const page = ({ params }) => {
+export async function generateMetadata({ params }) {
   const { id } = params;
-  const [recipe, setRecipe] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const {
-    steps
-  } = recipe?.data || {};
-
-  useEffect(() => {
-    const getRecipe = async () => {
-      try {
-        const data = await fetchRecipeById(id);
-        setRecipe(data);
-      } catch (error) {
-        console.error("Error fetching recipe:", error);
-      } finally {
-        setLoading(false);
-      }
+  try {
+    const recipe = await fetchRecipeById(id);
+    return {
+      title: recipe?.data?.name?.slice(0, 50) || "Recipe Details",
+      description: recipe?.data?.description?.slice(0, 100) || "View this delicious recipe.",
+      openGraph: {
+        images: [{ url: recipe?.data?.image }]
+      },
     };
-
-    if (id) getRecipe();
-  }, [id]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <span className="animate-spin rounded-full h-40 w-40 border-t-2 border-b-2 border-gray-900"></span>
-      </div>
-    );
+  } catch (error) {
+    console.error("Metadata fetch error:", error);
+    return {
+      title: "Recipe Not Found",
+      description: "The requested recipe could not be found.",
+    };
   }
-  if (!recipe) return <p>Recipe not found</p>;
+}
+
+const RecipePage = async ({ params }) => {
+  const { id } = params;
+
+  let recipe;
+  try {
+    recipe = await fetchRecipeById(id);
+  } catch (error) {
+    console.error("Error fetching recipe:", error);
+    return <p className="text-center text-red-500">Error loading recipe.</p>;
+  }
+
+  if (!recipe) return <p className="text-center text-gray-500">Recipe not found.</p>;
 
   return (
     <>
@@ -46,10 +46,10 @@ const page = ({ params }) => {
         <section>
           <div className="container py-12">
             <h3 className="font-semibold text-xl py-6">How to Make it</h3>
-            {steps?.map((step, index) => (
-              <div key={index} className="step">
-                <h3>Step {index + 1}</h3>
-                <p>{step}</p>
+            {recipe?.data?.steps?.map((step, index) => (
+              <div key={index} className="step mb-4">
+                <h3 className="text-lg font-semibold">Step {index + 1}</h3>
+                <p className="text-gray-600">{step}</p>
               </div>
             ))}
           </div>
@@ -60,4 +60,4 @@ const page = ({ params }) => {
   );
 };
 
-export default page;
+export default RecipePage;

@@ -1,4 +1,6 @@
 /* eslint-disable react/prop-types */
+"use client";
+
 import { addToFavorites, checkIfFavorited } from "@/app/action";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
