@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Flavory 🍲
 
-## Getting Started
+Welcome to **Flavory**, a delightful web application built with Next.js that brings culinary magic to your fingertips! Whether you're here to explore recipes, share your own, or connect with food enthusiasts, Flavory has you covered. Powered by modern tech and deployed on Vercel, this app is fast, secure, and ready to savor.
 
-First, run the development server:
+<!-- ![Flavory Screenshot](https://via.placeholder.com/800x400?text=Flavory+Screenshot)  
+*(Replace with an actual screenshot of your app!)* -->
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features
+- **User Authentication**: Secure login and registration with email and password.
+- **Responsive Design**: Looks great on desktops, tablets, and phones.
+- **Fast Performance**: Built with Next.js 14 and deployed on Vercel for lightning-fast load times.
+- **MongoDB Backend**: Stores user data and more with a scalable database.
+- **Customizable**: Easy to extend with new features like recipe sharing or profiles.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Live Demo
+Check out the live site: [https://flavory-phi.vercel.app](https://flavory-phi.vercel.app)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🛠️ Tech Stack
+- **Frontend & Backend**: [Next.js 14](https://nextjs.org/) with API routes
+- **Authentication**: [NextAuth.js v5](https://next-auth.js.org/) (Credentials Provider)
+- **Database**: [MongoDB](https://www.mongodb.com/) with [Mongoose](https://mongoosejs.com/)
+- **Deployment**: [Vercel](https://vercel.com/)
+- **Styling**: Tailwind CSS (inferred from class names like `grid place-items-center`)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## 📦 Installation
+Want to run Flavory locally? Follow these steps:
 
-## Learn More
+### Prerequisites
+- Node.js (>= 18.x)
+- MongoDB (local instance or Atlas)
+- Git
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Steps
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/aihridoy/flavory.git
+   cd flavory
