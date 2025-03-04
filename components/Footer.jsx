@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand Section */}
           <div>
-            <h2 className="text-xl font-bold text-gray-800">Learn with Sumit</h2>
+            <h2 className="text-xl font-bold text-gray-800">Flavory</h2>
             <p className="text-sm text-gray-500 mt-2">
               Discover amazing recipes & improve your cooking skills.
             </p>
@@ -39,7 +39,7 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="border-t border-gray-300 mt-8 pt-6 text-center text-sm text-gray-500">
-          © {new Date().getFullYear()} Learn with Sumit. All rights reserved.
+          © {new Date().getFullYear()} Flavory. All rights reserved.
         </div>
       </div>
     </footer>

@@ -18,7 +18,7 @@ export default function About() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          Welcome to RecipeHub 🍽️
+          Welcome to Flavory 🍽️
         </motion.h1>
 
         <motion.p
@@ -29,7 +29,7 @@ export default function About() {
         >
           Discover delicious recipes from around the world, crafted with love by
           home cooks and professional chefs alike. Whether you're a beginner or
-          a kitchen expert, RecipeHub is here to inspire your next meal!
+          a kitchen expert, Flavory is here to inspire your next meal!
         </motion.p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
