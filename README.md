@@ -2,10 +2,7 @@
 
 Welcome to **Flavory**, a delightful web application built with Next.js that brings culinary magic to your fingertips! Whether you're here to explore recipes, share your own, or connect with food enthusiasts, Flavory has you covered. Powered by modern tech and deployed on Vercel, this app is fast, secure, and ready to savor.
 
-![Flavory Screenshot](
-   https://i.ibb.co.com/G4hjbn6b/screencapture-flavory-phi-vercel-app-2025-03-06-02-19-02.png
-)  
-*(Replace with an actual screenshot of your app!)*
+![Flavory Screenshot](https://i.ibb.co.com/G4hjbn6b/screencapture-flavory-phi-vercel-app-2025-03-06-02-19-02.png)  
 
 ## ✨ Features
 - **User Authentication**: Secure login and registration with email and password.
