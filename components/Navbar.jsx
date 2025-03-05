@@ -26,9 +26,9 @@ const Navbar = () => {
       <div className="container flex justify-between py-6 items-center">
         <Link href="/">
           <img
-            src="/assets/images/logo.png"
+            src="/assets/images/Flavory.png"
             alt="Logo"
-            className="object-cover h-[40px]"
+            className="object-cover h-[40px] w-[100px]"
           />
         </Link>
 
