@@ -1,9 +1,29 @@
 /* eslint-disable react/react-in-jsx-scope */
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
+import { EMAIL_REGEX } from "@/app/lib/validators";
+
+const FOOTER_CATEGORIES = ["Breakfast", "Main Course", "Desserts", "Grilled"];
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [newsletterStatus, setNewsletterStatus] = useState(null); // { type: 'success' | 'error', message: string }
+
+  const handleJoin = (e) => {
+    e.preventDefault();
+
+    if (!EMAIL_REGEX.test(newsletterEmail)) {
+      setNewsletterStatus({ type: "error", message: "Enter a valid email address." });
+      return;
+    }
+
+    setNewsletterStatus({ type: "success", message: "You're subscribed! Check your inbox soon." });
+    setNewsletterEmail("");
+  };
 
   return (
     <footer className="relative" style={{ background: 'var(--color-text-primary)' }}>
@@ -59,10 +79,10 @@ const Footer = () => {
               Categories
             </h4>
             <ul className="space-y-3">
-              {["Breakfast", "Lunch", "Dinner", "Desserts"].map((category) => (
+              {FOOTER_CATEGORIES.map((category) => (
                 <li key={category}>
                   <Link
-                    href={`/recipes/category/${category.toLowerCase()}`}
+                    href={`/recipes/category/${encodeURIComponent(category)}`}
                     className="text-sm transition-colors duration-200 hover:text-white"
                     style={{ color: 'var(--color-text-tertiary)' }}
                   >
@@ -81,19 +101,33 @@ const Footer = () => {
             <p className="text-sm mb-4" style={{ color: 'var(--color-text-tertiary)' }}>
               Get weekly recipe inspiration delivered to your inbox.
             </p>
-            <div className="flex gap-2 mb-6">
+            <form onSubmit={handleJoin} noValidate className="flex gap-2 mb-2">
               <input
                 type="email"
+                value={newsletterEmail}
+                onChange={(e) => {
+                  setNewsletterEmail(e.target.value);
+                  if (newsletterStatus) setNewsletterStatus(null);
+                }}
                 placeholder="Your email"
                 className="flex-1 px-4 py-2.5 text-sm rounded-lg bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:border-white/30"
               />
               <button
+                type="submit"
                 className="px-4 py-2.5 text-sm font-medium text-white rounded-lg transition-all duration-200 hover:opacity-90"
                 style={{ background: 'var(--gradient-primary)' }}
               >
                 Join
               </button>
-            </div>
+            </form>
+            {newsletterStatus && (
+              <p
+                className="text-xs mb-4"
+                style={{ color: newsletterStatus.type === "success" ? "#4ade80" : "#f87171" }}
+              >
+                {newsletterStatus.message}
+              </p>
+            )}
 
             {/* Social Icons */}
             <div className="flex gap-3">

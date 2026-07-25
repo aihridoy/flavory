@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { logoutUser } from "@/app/action";
-import { FiMenu, FiX, FiUser, FiLogOut } from "react-icons/fi";
+import { FiMenu, FiX, FiUser, FiLogOut, FiHeart } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
@@ -44,11 +44,12 @@ const Navbar = () => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "py-3 bg-white/95 backdrop-blur-xl shadow-sm"
-          : "py-5 bg-black/20 backdrop-blur-sm"
+          ? "bg-white/95 backdrop-blur-xl shadow-sm"
+          : "bg-black/20 backdrop-blur-sm"
       }`}
+      style={{ height: "var(--navbar-height)" }}
     >
-      <div className="container flex justify-between items-center">
+      <div className="container h-full flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
           <div
@@ -105,6 +106,25 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-3">
           {session ? (
             <div className="flex items-center gap-3">
+              <Link
+                href="/favorites"
+                aria-label="My favorites"
+                className="p-2.5 rounded-lg transition-all duration-200"
+                style={{
+                  color: pathname === "/favorites"
+                    ? "var(--color-primary)"
+                    : isScrolled
+                    ? "var(--color-text-secondary)"
+                    : "rgba(255,255,255,0.9)",
+                  background: pathname === "/favorites"
+                    ? "var(--color-primary-50)"
+                    : isScrolled
+                    ? "var(--color-surface-muted)"
+                    : "rgba(255,255,255,0.1)",
+                }}
+              >
+                <FiHeart size={16} fill={pathname === "/favorites" ? "currentColor" : "none"} />
+              </Link>
               <div
                 className="flex items-center gap-2 px-3 py-2 rounded-lg"
                 style={{
@@ -250,6 +270,18 @@ const Navbar = () => {
                         </p>
                       </div>
                     </div>
+                    <Link
+                      href="/favorites"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200"
+                      style={{
+                        color: pathname === "/favorites" ? "white" : "var(--color-text-secondary)",
+                        background: pathname === "/favorites" ? "var(--gradient-primary)" : "var(--color-surface-muted)",
+                      }}
+                    >
+                      <FiHeart size={16} />
+                      My Favorites
+                    </Link>
                     <button
                       onClick={handleLogout}
                       disabled={loading}

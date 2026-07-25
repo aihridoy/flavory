@@ -91,7 +91,7 @@ const RecipePage = async ({ params }) => {
   return (
     <>
       <Navbar />
-      <main className="pt-16">
+      <main className="pt-24">
         {/* Back Link */}
         <div className="container pt-4 pb-2">
           <Link

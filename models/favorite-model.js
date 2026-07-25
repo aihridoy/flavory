@@ -7,6 +7,11 @@ const favoriteSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    recipeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'recipes',
+      required: true,
+    },
     name: {
       type: String,
       required: true,

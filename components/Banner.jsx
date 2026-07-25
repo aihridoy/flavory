@@ -6,7 +6,7 @@ const Banner = () => {
   return (
     <section
       className="relative flex items-center overflow-hidden"
-      style={{ height: "calc(100vh - 72px)" }}
+      style={{ height: "100vh" }}
     >
       {/* Background Image */}
       <div className="absolute inset-0">
@@ -38,7 +38,7 @@ const Banner = () => {
           >
             <FiBookOpen size={14} style={{ color: "#FF6B54" }} />
             <span className="text-sm font-medium" style={{ color: "#FF6B54" }}>
-              Over 10,000+ Recipes
+              100+ Recipes Across 10 Categories
             </span>
           </div>
 
@@ -57,10 +57,10 @@ const Banner = () => {
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-wrap gap-4 mb-12">
+          <div className="flex flex-wrap gap-3 sm:gap-4 mb-10 sm:mb-12">
             <Link
               href="/categorized"
-              className="group inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-base transition-all duration-300 hover:shadow-lg hover:shadow-red-500/25"
+              className="group inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-sm sm:text-base transition-all duration-300 hover:shadow-lg hover:shadow-red-500/25"
               style={{
                 background: "var(--gradient-primary)",
                 color: "white",
@@ -74,35 +74,35 @@ const Banner = () => {
             </Link>
             <Link
               href="/about-us"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-base text-white border border-white/25 transition-all duration-300 hover:bg-white/10 hover:border-white/40"
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-sm sm:text-base text-white border border-white/25 transition-all duration-300 hover:bg-white/10 hover:border-white/40"
             >
               Learn More
             </Link>
           </div>
 
           {/* Stats */}
-          <div className="flex gap-10">
+          <div className="flex flex-wrap gap-6 sm:gap-10">
             <div>
               <p
-                className="text-3xl font-bold text-white mb-1"
+                className="text-2xl sm:text-3xl font-bold text-white mb-1"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                10K+
+                100+
               </p>
               <p className="text-sm text-gray-400">Recipes</p>
             </div>
-            <div className="pl-10 border-l border-white/20">
+            <div className="pl-6 sm:pl-10 border-l border-white/20">
               <p
-                className="text-3xl font-bold text-white mb-1"
+                className="text-2xl sm:text-3xl font-bold text-white mb-1"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                50+
+                10
               </p>
               <p className="text-sm text-gray-400">Categories</p>
             </div>
-            <div className="pl-10 border-l border-white/20">
+            <div className="pl-6 sm:pl-10 border-l border-white/20">
               <p
-                className="text-3xl font-bold text-white mb-1"
+                className="text-2xl sm:text-3xl font-bold text-white mb-1"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 100K+

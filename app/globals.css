@@ -77,6 +77,9 @@
   --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Layout */
+  --navbar-height: 80px;
 }
 
 /* ========================================
@@ -126,13 +129,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Navigation */
-nav {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background: rgba(255, 255, 255, 0.92) !important;
-  border-bottom: 1px solid var(--color-border-light);
-}
-
 nav .active {
   color: var(--color-primary) !important;
   font-weight: 600;
@@ -212,8 +208,15 @@ nav .active {
 .input-field {
   @apply w-full px-4 py-3 rounded-lg;
   background: var(--color-surface);
+  color: var(--color-text-primary);
   border: 1.5px solid var(--color-border);
   transition: all var(--transition-fast);
+  min-height: 48px;
+}
+
+.input-field::placeholder {
+  color: var(--color-text-tertiary);
+  opacity: 0.7;
 }
 
 .input-field:focus {
@@ -222,8 +225,37 @@ nav .active {
   box-shadow: 0 0 0 3px var(--color-primary-50);
 }
 
-.input-field::placeholder {
-  color: var(--color-text-tertiary);
+.input-field.input-error {
+  border-color: #dc2626;
+}
+
+.input-field.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Kill browser chrome that clashes with the custom input design:
+   autofill's forced yellow/blue background, and native reveal/clear
+   icons doubling up with our own eye-toggle button. */
+.input-field:-webkit-autofill,
+.input-field:-webkit-autofill:hover,
+.input-field:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-text-primary);
+  -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.input-field::-ms-reveal,
+.input-field::-ms-clear {
+  display: none;
+}
+
+.input-field::-webkit-contacts-auto-fill-button,
+.input-field::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
 }
 
 /* Badge */
@@ -243,27 +275,6 @@ nav .active {
 .step p {
   @apply leading-8 mb-6 ml-8;
   color: var(--color-text-secondary);
-}
-
-/* Login Form */
-.login-form {
-  @apply flex flex-col my-6;
-}
-
-.login-form div {
-  @apply flex flex-col gap-2 my-2;
-}
-
-.login-form input {
-  @apply w-full px-4 py-3 rounded-lg;
-  border: 1.5px solid var(--color-border);
-  transition: all var(--transition-fast);
-}
-
-.login-form input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-50);
 }
 
 /* Select */

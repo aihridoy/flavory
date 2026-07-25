@@ -4,10 +4,12 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginUser } from "../action";
+import { validateEmail } from "../lib/validators";
 import { FiMail, FiLock, FiArrowRight, FiEye, FiEyeOff } from "react-icons/fi";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -15,11 +17,25 @@ const LoginPage = () => {
   const router = useRouter();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (fieldErrors[name]) {
+      setFieldErrors({ ...fieldErrors, [name]: "" });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const errors = {
+      email: validateEmail(formData.email),
+      password: formData.password ? "" : "Password is required.",
+    };
+    if (errors.email || errors.password) {
+      setFieldErrors(errors);
+      return;
+    }
+
     setLoading(true);
     setMessage("");
     setError("");
@@ -68,7 +84,7 @@ const LoginPage = () => {
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8"
+      <div className="flex-1 flex items-center justify-center px-6 py-10 sm:p-8"
            style={{ background: 'var(--color-surface)' }}>
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
@@ -113,7 +129,7 @@ const LoginPage = () => {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-2"
@@ -121,19 +137,22 @@ const LoginPage = () => {
                 Email Address
               </label>
               <div className="relative">
-                <FiMail className="absolute left-4 top-1/2 -translate-y-1/2"
-                        size={18} style={{ color: 'var(--color-text-tertiary)' }} />
+                <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                        size={18} />
                 <input
                   type="email"
                   name="email"
                   id="email"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
-                  className="input-field pl-12"
-                  required
+                  className={`input-field pl-12 ${fieldErrors.email ? "input-error" : ""}`}
                 />
               </div>
+              {fieldErrors.email && (
+                <p className="text-xs mt-1.5" style={{ color: '#dc2626' }}>{fieldErrors.email}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -143,27 +162,30 @@ const LoginPage = () => {
                 Password
               </label>
               <div className="relative">
-                <FiLock className="absolute left-4 top-1/2 -translate-y-1/2"
-                        size={18} style={{ color: 'var(--color-text-tertiary)' }} />
+                <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                        size={18} />
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   id="password"
+                  autoComplete="current-password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
-                  className="input-field pl-12 pr-12"
-                  required
+                  className={`input-field pl-12 pr-12 ${fieldErrors.password ? "input-error" : ""}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2"
-                  style={{ color: 'var(--color-text-tertiary)' }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
                 >
                   {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
                 </button>
               </div>
+              {fieldErrors.password && (
+                <p className="text-xs mt-1.5" style={{ color: '#dc2626' }}>{fieldErrors.password}</p>
+              )}
             </div>
 
             {/* Submit Button */}

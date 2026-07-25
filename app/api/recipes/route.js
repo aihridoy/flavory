@@ -2,14 +2,29 @@ import { NextResponse } from 'next/server';
 import { dbConnect } from '@/service/mongo';
 import { Recipe } from '@/models/recipe-model';
 
-export async function GET() {
+export async function GET(request) {
   try {
     await dbConnect();
-    const recipes = await Recipe.find({}).exec();
+    
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '12');
+    const skip = (page - 1) * limit;
+    
+    const recipes = await Recipe.find({}).skip(skip).limit(limit).exec();
+    const total = await Recipe.countDocuments();
+    
     return NextResponse.json(
       {
         success: true,
         data: recipes,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasMore: skip + recipes.length < total,
+        },
       },
       { status: 200 }
     );
