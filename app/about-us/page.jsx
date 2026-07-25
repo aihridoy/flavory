@@ -30,7 +30,7 @@ export default function About() {
 
   const stats = [
     { icon: <FaUsers />, value: "100K+", label: "Happy Cooks" },
-    { icon: <FaUtensils />, value: "100+", label: "Recipes" },
+    { icon: <FaUtensils />, value: "50", label: "Recipes" },
     { icon: <FaGlobe />, value: "10", label: "Categories" },
     { icon: <FaAward />, value: "4.9", label: "Average Rating" },
   ];
