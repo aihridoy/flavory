@@ -9,9 +9,12 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '12');
+    const fetchAll = limit === 0;
     const skip = (page - 1) * limit;
-    
-    const recipes = await Recipe.find({}).skip(skip).limit(limit).exec();
+
+    const query = Recipe.find({});
+    if (!fetchAll) query.skip(skip).limit(limit);
+    const recipes = await query.exec();
     const total = await Recipe.countDocuments();
     
     return NextResponse.json(
