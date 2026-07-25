@@ -3,6 +3,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { registerUser } from "../action";
+import { validateEmail, validateName, validatePassword } from "../lib/validators";
 import { FiMail, FiLock, FiUser, FiArrowRight, FiEye, FiEyeOff } from "react-icons/fi";
 
 const RegisterPage = () => {
@@ -12,28 +13,47 @@ const RegisterPage = () => {
     email: "",
     password: "",
   });
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (fieldErrors[name]) {
+      setFieldErrors({ ...fieldErrors, [name]: "" });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const errors = {
+      firstName: validateName(formData.firstName, "First name"),
+      lastName: validateName(formData.lastName, "Last name"),
+      email: validateEmail(formData.email),
+      password: validatePassword(formData.password),
+    };
+    if (Object.values(errors).some(Boolean)) {
+      setFieldErrors(errors);
+      return;
+    }
+
     setLoading(true);
-    setMessage("");
+    setError("");
+    setSuccess(false);
 
     const result = await registerUser(formData);
 
     if (result.success) {
-      setMessage("Registration successful! Redirecting...");
+      setSuccess(true);
       setTimeout(() => {
         window.location.href = "/login";
       }, 1500);
     } else {
-      setMessage(result.message);
+      setError(result.message || "Registration failed. Please try again.");
     }
 
     setLoading(false);
@@ -69,7 +89,7 @@ const RegisterPage = () => {
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8"
+      <div className="flex-1 flex items-center justify-center px-6 py-10 sm:p-8"
            style={{ background: 'var(--color-surface)' }}>
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
@@ -97,21 +117,23 @@ const RegisterPage = () => {
           </div>
 
           {/* Success/Error Messages */}
-          {message && (
-            <div className={`p-4 rounded-xl mb-6 text-sm flex items-center gap-3 ${
-              message.includes("successful") ? "" : ""
-            }`}
-                 style={{
-                   background: message.includes("successful") ? '#dcfce7' : 'var(--color-primary-50)',
-                   color: message.includes("successful") ? '#16a34a' : 'var(--color-primary)',
-                 }}>
-              <span className="text-lg">{message.includes("successful") ? "&#10003;" : "&#9888;"}</span>
-              {message}
+          {success && (
+            <div className="p-4 rounded-xl mb-6 text-sm flex items-center gap-3"
+                 style={{ background: '#dcfce7', color: '#16a34a' }}>
+              <span className="text-lg">&#10003;</span>
+              Registration successful! Redirecting to sign in&hellip;
+            </div>
+          )}
+          {error && (
+            <div className="p-4 rounded-xl mb-6 text-sm flex items-center gap-3"
+                 style={{ background: 'var(--color-primary-50)', color: 'var(--color-primary)' }}>
+              <span className="text-lg">&#9888;</span>
+              {error}
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
             {/* Name Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -120,19 +142,22 @@ const RegisterPage = () => {
                   First Name
                 </label>
                 <div className="relative">
-                  <FiUser className="absolute left-4 top-1/2 -translate-y-1/2"
-                          size={18} style={{ color: 'var(--color-text-tertiary)' }} />
+                  <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                          size={18} />
                   <input
                     type="text"
                     name="firstName"
                     id="firstName"
+                    autoComplete="given-name"
                     value={formData.firstName}
                     onChange={handleChange}
                     placeholder="John"
-                    className="input-field pl-12"
-                    required
+                    className={`input-field pl-12 ${fieldErrors.firstName ? "input-error" : ""}`}
                   />
                 </div>
+                {fieldErrors.firstName && (
+                  <p className="text-xs mt-1.5" style={{ color: '#dc2626' }}>{fieldErrors.firstName}</p>
+                )}
               </div>
 
               <div>
@@ -140,16 +165,23 @@ const RegisterPage = () => {
                        style={{ color: 'var(--color-text-primary)' }}>
                   Last Name
                 </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  id="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  placeholder="Doe"
-                  className="input-field"
-                  required
-                />
+                <div className="relative">
+                  <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                          size={18} />
+                  <input
+                    type="text"
+                    name="lastName"
+                    id="lastName"
+                    autoComplete="family-name"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    placeholder="Doe"
+                    className={`input-field pl-12 ${fieldErrors.lastName ? "input-error" : ""}`}
+                  />
+                </div>
+                {fieldErrors.lastName && (
+                  <p className="text-xs mt-1.5" style={{ color: '#dc2626' }}>{fieldErrors.lastName}</p>
+                )}
               </div>
             </div>
 
@@ -160,19 +192,22 @@ const RegisterPage = () => {
                 Email Address
               </label>
               <div className="relative">
-                <FiMail className="absolute left-4 top-1/2 -translate-y-1/2"
-                        size={18} style={{ color: 'var(--color-text-tertiary)' }} />
+                <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                        size={18} />
                 <input
                   type="email"
                   name="email"
                   id="email"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
-                  className="input-field pl-12"
-                  required
+                  className={`input-field pl-12 ${fieldErrors.email ? "input-error" : ""}`}
                 />
               </div>
+              {fieldErrors.email && (
+                <p className="text-xs mt-1.5" style={{ color: '#dc2626' }}>{fieldErrors.email}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -182,27 +217,34 @@ const RegisterPage = () => {
                 Password
               </label>
               <div className="relative">
-                <FiLock className="absolute left-4 top-1/2 -translate-y-1/2"
-                        size={18} style={{ color: 'var(--color-text-tertiary)' }} />
+                <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                        size={18} />
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   id="password"
+                  autoComplete="new-password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Create a strong password"
-                  className="input-field pl-12 pr-12"
-                  required
+                  className={`input-field pl-12 pr-12 ${fieldErrors.password ? "input-error" : ""}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2"
-                  style={{ color: 'var(--color-text-tertiary)' }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
                 >
                   {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
                 </button>
               </div>
+              {fieldErrors.password ? (
+                <p className="text-xs mt-1.5" style={{ color: '#dc2626' }}>{fieldErrors.password}</p>
+              ) : (
+                <p className="text-xs mt-1.5" style={{ color: 'var(--color-text-tertiary)' }}>
+                  At least 8 characters, with a letter and a number.
+                </p>
+              )}
             </div>
 
             {/* Submit Button */}

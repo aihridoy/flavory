@@ -1,25 +1,32 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { fetchRecipes } from "@/app/action";
+import { fetchRecipesPaginated, fetchCategories } from "@/app/action";
 import Recipe from "./Recipe";
 import Link from "next/link";
-import { FiGrid, FiList, FiArrowRight } from "react-icons/fi";
+import { FiGrid } from "react-icons/fi";
 
 const Recipes = () => {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const recipesPerPage = 9;
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const observerRef = useRef(null);
+  const lastRecipeRef = useRef(null);
 
+  // Initial load
   useEffect(() => {
     const getRecipes = async () => {
       try {
-        const result = await fetchRecipes();
+        const result = await fetchRecipesPaginated(1, 12);
         if (result.success) {
           setRecipes(result.data);
+          setHasMore(result.pagination.hasMore);
         } else {
           setError(result.message);
         }
@@ -29,15 +36,73 @@ const Recipes = () => {
         setLoading(false);
       }
     };
+    const getCategories = async () => {
+      try {
+        const result = await fetchCategories();
+        if (result.success) {
+          setCategories(result.data);
+        }
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
     getRecipes();
+    getCategories();
   }, []);
 
-  const categories = [...new Set(recipes.map((recipe) => recipe.category))];
+  // Load more recipes
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
 
-  const indexOfLastRecipe = currentPage * recipesPerPage;
-  const indexOfFirstRecipe = indexOfLastRecipe - recipesPerPage;
-  const currentRecipes = recipes.slice(indexOfFirstRecipe, indexOfLastRecipe);
-  const totalPages = Math.ceil(recipes.length / recipesPerPage);
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const result = await fetchRecipesPaginated(nextPage, 12);
+      if (result.success) {
+        setRecipes((prev) => [...prev, ...result.data]);
+        setPage(nextPage);
+        setHasMore(result.pagination.hasMore);
+      }
+    } catch {
+      setError("Failed to load more recipes");
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [page, loadingMore, hasMore]);
+
+  // Intersection Observer for infinite scrolling
+  useEffect(() => {
+    if (loading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1, rootMargin: "100px" }
+    );
+
+    observerRef.current = observer;
+
+    if (lastRecipeRef.current) {
+      observer.observe(lastRecipeRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [loading, hasMore, loadingMore, loadMore]);
+
+  // Update observer when recipes change
+  useEffect(() => {
+    if (observerRef.current && lastRecipeRef.current) {
+      observerRef.current.unobserve(lastRecipeRef.current);
+      observerRef.current.observe(lastRecipeRef.current);
+    }
+  }, [recipes]);
 
   return (
     <section className="py-16" style={{ background: 'var(--color-surface-muted)' }}>
@@ -67,7 +132,7 @@ const Recipes = () => {
                 <FiGrid size={18} style={{ color: 'var(--color-primary)' }} />
                 Categories
               </h3>
-              {loading ? (
+              {categoriesLoading ? (
                 <div className="space-y-3">
                   {[...Array(5)].map((_, i) => (
                     <div key={i} className="h-10 skeleton rounded-lg" />
@@ -76,16 +141,21 @@ const Recipes = () => {
               ) : (
                 <ul className="space-y-1">
                   {categories.length > 0 ? (
-                    categories.map((category, index) => (
-                      <li key={index}>
+                    categories.map((category) => (
+                      <li key={category.name}>
                         <Link
-                          href={`/recipes/category/${category}`}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-50"
+                          href={`/recipes/category/${category.name}`}
+                          className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-50"
                           style={{ color: 'var(--color-text-secondary)' }}
                         >
-                          <span className="w-1.5 h-1.5 rounded-full"
-                                style={{ background: 'var(--color-primary)' }} />
-                          {category}
+                          <span className="flex items-center gap-3">
+                            <span className="w-1.5 h-1.5 rounded-full"
+                                  style={{ background: 'var(--color-primary)' }} />
+                            {category.name}
+                          </span>
+                          <span className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+                            {category.count}
+                          </span>
                         </Link>
                       </li>
                     ))
@@ -125,63 +195,41 @@ const Recipes = () => {
             ) : (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {currentRecipes.map((recipe, index) => (
-                    <motion.div
-                      key={recipe._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.05 }}
-                    >
-                      <Recipe recipe={recipe} />
-                    </motion.div>
-                  ))}
+                  {recipes.map((recipe, index) => {
+                    const isLast = index === recipes.length - 1;
+                    return (
+                      <motion.div
+                        key={recipe._id}
+                        ref={isLast ? lastRecipeRef : null}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.3) }}
+                      >
+                        <Recipe recipe={recipe} />
+                      </motion.div>
+                    );
+                  })}
                 </div>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-2 mt-10">
-                    <button
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1}
-                      className="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-                      style={{
-                        background: currentPage === 1 ? 'var(--color-surface-muted)' : 'white',
-                        color: 'var(--color-text-secondary)',
-                        boxShadow: currentPage === 1 ? 'none' : 'var(--shadow-sm)',
-                      }}
-                    >
-                      Previous
-                    </button>
-
-                    <div className="flex gap-1">
-                      {[...Array(totalPages)].map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setCurrentPage(i + 1)}
-                          className="w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200"
-                          style={{
-                            background: currentPage === i + 1 ? 'var(--gradient-primary)' : 'white',
-                            color: currentPage === i + 1 ? 'white' : 'var(--color-text-secondary)',
-                            boxShadow: currentPage === i + 1 ? '0 4px 15px rgba(232, 77, 53, 0.3)' : 'var(--shadow-sm)',
-                          }}
-                        >
-                          {i + 1}
-                        </button>
-                      ))}
+                {/* Loading More Indicator */}
+                {loadingMore && (
+                  <div className="flex justify-center items-center py-8">
+                    <div className="flex items-center gap-3">
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      <span style={{ color: 'var(--color-text-secondary)' }}>Loading more recipes...</span>
                     </div>
+                  </div>
+                )}
 
-                    <button
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                      disabled={currentPage === totalPages}
-                      className="px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-                      style={{
-                        background: currentPage === totalPages ? 'var(--color-surface-muted)' : 'white',
-                        color: 'var(--color-text-secondary)',
-                        boxShadow: currentPage === totalPages ? 'none' : 'var(--shadow-sm)',
-                      }}
-                    >
-                      Next
-                    </button>
+                {/* End of Results */}
+                {!hasMore && recipes.length > 0 && (
+                  <div className="text-center py-8">
+                    <p style={{ color: 'var(--color-text-tertiary)' }}>
+                      You&apos;ve seen all {recipes.length} recipes!
+                    </p>
                   </div>
                 )}
               </>

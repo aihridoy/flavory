@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { FaUtensils, FaHeart, FaStar, FaUsers, FaGlobe, FaAward } from "react-icons/fa";
 import Link from "next/link";
 import { FiArrowRight, FiCheck } from "react-icons/fi";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function About() {
   const features = [
@@ -28,8 +30,8 @@ export default function About() {
 
   const stats = [
     { icon: <FaUsers />, value: "100K+", label: "Happy Cooks" },
-    { icon: <FaUtensils />, value: "10K+", label: "Recipes" },
-    { icon: <FaGlobe />, value: "50+", label: "Categories" },
+    { icon: <FaUtensils />, value: "100+", label: "Recipes" },
+    { icon: <FaGlobe />, value: "10", label: "Categories" },
     { icon: <FaAward />, value: "4.9", label: "Average Rating" },
   ];
 
@@ -44,8 +46,9 @@ export default function About() {
 
   return (
     <div className="min-h-screen">
+      <Navbar />
       {/* Hero Section */}
-      <section className="relative py-32 overflow-hidden">
+      <section className="relative pt-40 pb-32 overflow-hidden">
         <div className="absolute inset-0" style={{ background: 'var(--gradient-primary)', opacity: 0.05 }} />
         <div className="container relative z-10">
           <div className="max-w-3xl mx-auto text-center">
@@ -203,6 +206,7 @@ export default function About() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

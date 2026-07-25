@@ -39,15 +39,15 @@ const RecipeDetails = ({ recipe }) => {
 
   useEffect(() => {
     const fetchFavoriteStatus = async () => {
-      if (userId && name) {
-        const result = await checkIfFavorited(userId, name);
+      if (userId && _id) {
+        const result = await checkIfFavorited(userId, _id);
         if (result.success) {
           setIsFavorited(result.isFavorited);
         }
       }
     };
     fetchFavoriteStatus();
-  }, [userId, name]);
+  }, [userId, _id]);
 
   const handleAddToFavorites = async () => {
     if (!userId) {
@@ -55,7 +55,7 @@ const RecipeDetails = ({ recipe }) => {
       return;
     }
 
-    const favoriteRecipe = { name, image, author, rating };
+    const favoriteRecipe = { _id, name, image, author, rating };
     const response = await addToFavorites(userId, favoriteRecipe);
 
     if (response.success) {

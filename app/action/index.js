@@ -4,19 +4,40 @@ import { signIn, signOut } from "next-auth/react";
 
 export const fetchRecipes = async () => {
     try {
-      const response = await fetch(`/api/recipes`, 
+      const response = await fetch(`/api/recipes`,
         {
             method: 'GET',
             cache: 'no-store',
         }
       );
-  
+
       if (!response.ok) {
         throw new Error('Failed to fetch recipes');
       }
-  
+
       const data = await response.json();
-      return data; 
+      return data;
+    } catch (error) {
+      console.error('Error fetching recipes:', error);
+      return { success: false, message: error.message };
+    }
+  };
+
+  export const fetchRecipesPaginated = async (page = 1, limit = 12) => {
+    try {
+      const response = await fetch(`/api/recipes?page=${page}&limit=${limit}`,
+        {
+            method: 'GET',
+            cache: 'no-store',
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch recipes');
+      }
+
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error('Error fetching recipes:', error);
       return { success: false, message: error.message };
@@ -43,6 +64,25 @@ export const fetchRecipes = async () => {
         console.error("Error fetching recipe:", error);
         return { success: false, message: error.message };
     }
+};
+
+export const fetchCategories = async () => {
+  try {
+    const response = await fetch(`/api/recipes/categories`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch categories');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return { success: false, message: error.message };
+  }
 };
 
 export const fetchRecipesByCategory = async (categoryName) => {
@@ -114,14 +154,14 @@ export const logoutUser = async () => {
 
 export const addToFavorites = async (userId, recipe) => {
   try {
-    const { name, image, author, rating } = recipe;
+    const { _id, name, image, author, rating } = recipe;
 
     const response = await fetch(`/api/favorites`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ userId, name, image, author, rating }),
+      body: JSON.stringify({ userId, recipeId: _id, name, image, author, rating }),
     });
 
     const data = await response.json();
@@ -136,10 +176,10 @@ export const addToFavorites = async (userId, recipe) => {
   }
 };
 
-export const checkIfFavorited = async (userId, name) => {
+export const checkIfFavorited = async (userId, recipeId) => {
   try {
     const response = await fetch(
-      `/api/favorites?userId=${userId}&name=${encodeURIComponent(name)}`,
+      `/api/favorites?userId=${userId}&recipeId=${recipeId}`,
       {
         method: 'GET',
         headers: {
@@ -154,7 +194,45 @@ export const checkIfFavorited = async (userId, name) => {
       throw new Error(data.message || 'Failed to check favorite status');
     }
 
-    return { success: true, isFavorited: data.isFavorited };
+    return { success: true, isFavorited: data.isFavorited, favoriteId: data.favoriteId };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const fetchUserFavorites = async (userId) => {
+  try {
+    const response = await fetch(`/api/favorites?userId=${userId}`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to fetch favorites');
+    }
+
+    return { success: true, data: data.data };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+};
+
+export const removeFavorite = async (userId, favoriteId) => {
+  try {
+    const response = await fetch(
+      `/api/favorites?userId=${userId}&favoriteId=${favoriteId}`,
+      { method: 'DELETE' }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to remove favorite');
+    }
+
+    return { success: true, message: data.message };
   } catch (error) {
     return { success: false, message: error.message };
   }
