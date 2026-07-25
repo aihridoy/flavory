@@ -1,5 +1,6 @@
 import { dbConnect } from '@/service/mongo';
 import { Favorite } from '@/models/favorite-model';
+import { Recipe } from '@/models/recipe-model';
 
 export async function POST(req) {
   try {
@@ -66,8 +67,31 @@ export async function GET(req) {
     }
 
     // List mode: /api/favorites?userId=...
-    const favorites = await Favorite.find({ userId }).sort({ createdAt: -1 });
-    return new Response(JSON.stringify({ data: favorites }), { status: 200 });
+    // A favorite copies name/image/author/rating at save time, so those go
+    // stale as soon as a recipe's photo changes, and dangle entirely when the
+    // recipe is gone (re-seeding assigns new ids). A stale image URL on an
+    // unconfigured host makes next/image throw and takes down the whole
+    // favorites page, so read these fields off the live recipe and drop
+    // favorites whose recipe no longer exists.
+    const favorites = await Favorite.find({ userId }).sort({ createdAt: -1 }).lean();
+    const recipes = await Recipe.find({
+      _id: { $in: favorites.map((f) => f.recipeId) },
+    }).lean();
+    const recipeById = new Map(recipes.map((r) => [String(r._id), r]));
+
+    const data = favorites.flatMap((fav) => {
+      const recipe = recipeById.get(String(fav.recipeId));
+      if (!recipe) return [];
+      return [{
+        ...fav,
+        name: recipe.name,
+        image: recipe.image,
+        author: recipe.author,
+        rating: recipe.rating,
+      }];
+    });
+
+    return new Response(JSON.stringify({ data }), { status: 200 });
   } catch (error) {
     console.error('🔥 Error fetching favorites:', error.message);
     return new Response(
