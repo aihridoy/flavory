@@ -7,7 +7,7 @@ import { fetchRecipes, fetchCategories } from "@/app/action";
 import Recipe from "@/components/Recipe";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { FiGrid, FiSearch, FiX } from "react-icons/fi";
+import { FiGrid, FiSearch, FiX, FiChevronDown } from "react-icons/fi";
 
 const SORT_OPTIONS = [
   { value: "top", label: "Top Rated" },
@@ -159,15 +159,21 @@ const Page = () => {
                 </button>
               )}
             </div>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="input-field sm:w-56"
-            >
-              {SORT_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
+            <div className="relative sm:w-56">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="input-field appearance-none pr-10 w-full"
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              <FiChevronDown
+                size={18}
+                className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+            </div>
           </div>
 
           {/* Category Chips */}
