@@ -205,57 +205,59 @@ nav .active {
 }
 
 /* Form Inputs */
-.input-field {
-  @apply w-full px-4 py-3 rounded-lg;
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  border: 1.5px solid var(--color-border);
-  transition: all var(--transition-fast);
-  min-height: 48px;
-}
+@layer components {
+  .input-field {
+    @apply w-full px-4 py-3 rounded-lg;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    border: 1.5px solid var(--color-border);
+    transition: all var(--transition-fast);
+    min-height: 48px;
+  }
 
-.input-field::placeholder {
-  color: var(--color-text-tertiary);
-  opacity: 0.7;
-}
+  .input-field::placeholder {
+    color: var(--color-text-tertiary);
+    opacity: 0.7;
+  }
 
-.input-field:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-50);
-}
+  .input-field:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-50);
+  }
 
-.input-field.input-error {
-  border-color: #dc2626;
-}
+  .input-field.input-error {
+    border-color: #dc2626;
+  }
 
-.input-field.input-error:focus {
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-}
+  .input-field.input-error:focus {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  }
 
-/* Kill browser chrome that clashes with the custom input design:
-   autofill's forced yellow/blue background, and native reveal/clear
-   icons doubling up with our own eye-toggle button. */
-.input-field:-webkit-autofill,
-.input-field:-webkit-autofill:hover,
-.input-field:-webkit-autofill:focus {
-  -webkit-text-fill-color: var(--color-text-primary);
-  -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset;
-  transition: background-color 9999s ease-in-out 0s;
-}
+  /* Kill browser chrome that clashes with the custom input design:
+     autofill's forced yellow/blue background, and native reveal/clear
+     icons doubling up with our own eye-toggle button. */
+  .input-field:-webkit-autofill,
+  .input-field:-webkit-autofill:hover,
+  .input-field:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--color-text-primary);
+    -webkit-box-shadow: 0 0 0 1000px var(--color-surface) inset;
+    transition: background-color 9999s ease-in-out 0s;
+  }
 
-.input-field::-ms-reveal,
-.input-field::-ms-clear {
-  display: none;
-}
+  .input-field::-ms-reveal,
+  .input-field::-ms-clear {
+    display: none;
+  }
 
-.input-field::-webkit-contacts-auto-fill-button,
-.input-field::-webkit-credentials-auto-fill-button {
-  visibility: hidden;
-  display: none !important;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
+  .input-field::-webkit-contacts-auto-fill-button,
+  .input-field::-webkit-credentials-auto-fill-button {
+    visibility: hidden;
+    display: none !important;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+  }
 }
 
 /* Badge */
