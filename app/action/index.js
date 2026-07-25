@@ -4,7 +4,7 @@ import { signIn, signOut } from "next-auth/react";
 
 export const fetchRecipes = async () => {
     try {
-      const response = await fetch(`/api/recipes`,
+      const response = await fetch(`/api/recipes?limit=0`,
         {
             method: 'GET',
             cache: 'no-store',
