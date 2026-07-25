@@ -16,13 +16,14 @@ import {
   TwitterIcon,
   WhatsappIcon,
 } from "next-share";
+import { FiHeart, FiClock, FiUsers, FiShare2, FiPrinter } from "react-icons/fi";
 
 const RecipeDetails = ({ recipe }) => {
   const { data: session } = useSession();
   const userId = session?.user?.id;
 
   const {
-    _id="",
+    _id = "",
     name = "",
     category = "",
     description = "",
@@ -45,7 +46,6 @@ const RecipeDetails = ({ recipe }) => {
         }
       }
     };
-
     fetchFavoriteStatus();
   }, [userId, name]);
 
@@ -55,13 +55,7 @@ const RecipeDetails = ({ recipe }) => {
       return;
     }
 
-    const favoriteRecipe = {
-      name,
-      image,
-      author,
-      rating,
-    };
-
+    const favoriteRecipe = { name, image, author, rating };
     const response = await addToFavorites(userId, favoriteRecipe);
 
     if (response.success) {
@@ -72,107 +66,173 @@ const RecipeDetails = ({ recipe }) => {
     }
   };
 
-  // URL to share (current page URL)
-  const shareUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/recipes/${_id}`
-
+  const shareUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/recipes/${_id}`;
 
   return (
-    <section>
-      <div className="grid grid-cols-12 container gap-8 justify-items-center">
-        <div className="col-span-12 md:col-span-6">
-          <Image
-            src={image}
-            alt={name}
-            width={500}
-            height={500}
-            className="w-full h-full rounded-lg object-contain"
-          />
-        </div>
-        <div className="col-span-12 md:col-span-6 py-8 flex flex-col justify-center">
-          <h2 className="font-semibold text-4xl lg:w-8/12 leading-10">
-            {name}
-          </h2>
-          <p className="text-xs text-[#eb4a36] italic my-2">{category}</p>
-          <p className="text-gray-600 text-sm my-6 leading-6">{description}</p>
+    <section className="pt-24 pb-12">
+      <div className="container">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          {/* Image Section */}
+          <div className="relative">
+            <div className="relative rounded-2xl overflow-hidden shadow-xl">
+              <Image
+                src={image}
+                alt={name}
+                width={600}
+                height={600}
+                className="w-full h-auto object-cover"
+                priority
+              />
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
 
-          <div className="flex gap-4 justify-center divide-x my-12">
-            <div className="flex-1 text-center">
-              <h3 className="font-medium text-lg text-gray-700 mt-2">
-                Prep time
-              </h3>
-              <p className="text-gray-500 text-sm">{activeTime}</p>
-            </div>
-            <div className="flex-1 text-center">
-              <h3 className="font-medium text-lg text-gray-700 mt-2">
-                Cook time
-              </h3>
-              <p className="text-gray-500 text-sm">{totalTime}</p>
-            </div>
-            <div className="flex-1 text-center">
-              <h3 className="font-medium text-lg text-gray-700 mt-2">
-                Servings
-              </h3>
-              <p className="text-gray-500 text-sm">{serves}</p>
+              {/* Category Badge */}
+              <div className="absolute top-4 left-4">
+                <span className="badge text-sm px-4 py-1.5">
+                  {category}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="flex gap-6 justify-between items-center bg-gray-50 p-4 rounded-lg shadow-lg">
-            {/* Favorite Button */}
-            <button
-              className={`flex items-center gap-2 text-lg font-medium cursor-pointer transition-colors duration-300 
-              ${isFavorited ? "text-red-500" : "text-gray-600 hover:text-[#eb4a36]"}`}
-              onClick={handleAddToFavorites}
-              disabled={isFavorited}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="transition-colors duration-300"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
-              </svg>
-              <span>{isFavorited ? "Favorited" : "Favorite"}</span>
-            </button>
+          {/* Details Section */}
+          <div className="lg:sticky lg:top-28">
+            {/* Category */}
+            <p className="text-sm font-medium uppercase tracking-wider mb-2"
+               style={{ color: 'var(--color-primary)' }}>
+              {category}
+            </p>
 
-            {/* Social Share Buttons */}
-            <div className="flex items-center gap-4">
-              <p className="text-lg font-medium text-gray-700">Share On:</p>
-              <div className="flex gap-4">
-                <FacebookShareButton
-                  url={shareUrl}
-                  hashtag={name}
-                >
-                  <FacebookIcon
-                    className="transition-transform transform hover:scale-110"
-                    size={28}
-                    round
-                  />
+            {/* Title */}
+            <h1 className="text-3xl sm:text-4xl font-bold leading-tight mb-4"
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text-primary)' }}>
+              {name}
+            </h1>
+
+            {/* Author & Rating */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-medium"
+                     style={{ background: 'var(--gradient-primary)' }}>
+                  {author?.charAt(0)?.toUpperCase() || "C"}
+                </div>
+                <div>
+                  <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
+                    {author || "Unknown Chef"}
+                  </p>
+                  <p className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+                    Recipe Author
+                  </p>
+                </div>
+              </div>
+              {rating && (
+                <div className="flex items-center gap-1 px-3 py-1.5 rounded-full"
+                     style={{ background: 'var(--color-primary-50)' }}>
+                  <span>&#11088;</span>
+                  <span className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>
+                    {rating}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Description */}
+            <p className="text-base leading-relaxed mb-8"
+               style={{ color: 'var(--color-text-secondary)' }}>
+              {description}
+            </p>
+
+            {/* Time Stats */}
+            <div className="grid grid-cols-3 gap-4 p-6 rounded-xl mb-8"
+                 style={{ background: 'var(--color-surface-muted)' }}>
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-2"
+                     style={{ background: 'var(--color-primary-50)' }}>
+                  <FiClock size={20} style={{ color: 'var(--color-primary)' }} />
+                </div>
+                <p className="text-xs font-medium uppercase tracking-wider mb-1"
+                   style={{ color: 'var(--color-text-tertiary)' }}>
+                  Prep Time
+                </p>
+                <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                  {activeTime || "15 min"}
+                </p>
+              </div>
+              <div className="text-center border-x px-4"
+                   style={{ borderColor: 'var(--color-border)' }}>
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-2"
+                     style={{ background: 'var(--color-primary-50)' }}>
+                  <FiClock size={20} style={{ color: 'var(--color-primary)' }} />
+                </div>
+                <p className="text-xs font-medium uppercase tracking-wider mb-1"
+                   style={{ color: 'var(--color-text-tertiary)' }}>
+                  Cook Time
+                </p>
+                <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                  {totalTime || "30 min"}
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-2"
+                     style={{ background: 'var(--color-primary-50)' }}>
+                  <FiUsers size={20} style={{ color: 'var(--color-primary)' }} />
+                </div>
+                <p className="text-xs font-medium uppercase tracking-wider mb-1"
+                   style={{ color: 'var(--color-text-tertiary)' }}>
+                  Servings
+                </p>
+                <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                  {serves || "4"}
+                </p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              {/* Favorite Button */}
+              <button
+                onClick={handleAddToFavorites}
+                disabled={isFavorited}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-all duration-300 disabled:opacity-60"
+                style={{
+                  background: isFavorited ? 'var(--color-primary)' : 'white',
+                  color: isFavorited ? 'white' : 'var(--color-primary)',
+                  border: isFavorited ? 'none' : '2px solid var(--color-primary)',
+                  boxShadow: isFavorited ? '0 4px 20px rgba(232, 77, 53, 0.3)' : 'var(--shadow-sm)',
+                }}
+              >
+                <FiHeart size={20} fill={isFavorited ? "currentColor" : "none"} />
+                <span>{isFavorited ? "Saved to Favorites" : "Add to Favorites"}</span>
+              </button>
+            </div>
+
+            {/* Share Section */}
+            <div className="mt-6 p-4 rounded-xl flex items-center justify-between"
+                 style={{ background: 'var(--color-surface-muted)' }}>
+              <div className="flex items-center gap-2">
+                <FiShare2 size={16} style={{ color: 'var(--color-text-tertiary)' }} />
+                <span className="text-sm font-medium" style={{ color: 'var(--color-text-secondary)' }}>
+                  Share this recipe
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <FacebookShareButton url={shareUrl} hashtag={name}>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
+                       style={{ background: 'white', boxShadow: 'var(--shadow-sm)' }}>
+                    <FacebookIcon size={20} round={false} />
+                  </div>
                 </FacebookShareButton>
                 <TwitterShareButton url={shareUrl} hashtag={name}>
-                  <TwitterIcon
-                    className="transition-transform transform hover:scale-110"
-                    size={28}
-                    round
-                  />
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
+                       style={{ background: 'white', boxShadow: 'var(--shadow-sm)' }}>
+                    <TwitterIcon size={20} round={false} />
+                  </div>
                 </TwitterShareButton>
-                <WhatsappShareButton
-                  url={shareUrl}
-                  hashtag={name}
-                  separator=":: "
-                >
-                  <WhatsappIcon
-                    className="transition-transform transform hover:scale-110"
-                    size={28}
-                    round
-                  />
+                <WhatsappShareButton url={shareUrl} hashtag={name} separator=":: ">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
+                       style={{ background: 'white', boxShadow: 'var(--shadow-sm)' }}>
+                    <WhatsappIcon size={20} round={false} />
+                  </div>
                 </WhatsappShareButton>
               </div>
             </div>
@@ -180,8 +240,15 @@ const RecipeDetails = ({ recipe }) => {
         </div>
       </div>
 
-      {/* Toast Container */}
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        toastStyle={{
+          borderRadius: '12px',
+          background: 'var(--color-surface)',
+          boxShadow: 'var(--shadow-lg)',
+        }}
+      />
     </section>
   );
 };

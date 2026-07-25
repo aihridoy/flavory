@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main>
+      <main className="pt-0">
         <Banner />
         <Recipes />
         <Footer />
