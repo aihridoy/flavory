@@ -38,7 +38,7 @@ const Banner = () => {
           >
             <FiBookOpen size={14} style={{ color: "#FF6B54" }} />
             <span className="text-sm font-medium" style={{ color: "#FF6B54" }}>
-              100+ Recipes Across 10 Categories
+              50 Recipes Across 10 Categories
             </span>
           </div>
 
@@ -87,7 +87,7 @@ const Banner = () => {
                 className="text-2xl sm:text-3xl font-bold text-white mb-1"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                100+
+                50
               </p>
               <p className="text-sm text-gray-400">Recipes</p>
             </div>
