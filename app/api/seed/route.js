@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { dbConnect } from '@/service/mongo';
 import { Recipe } from '@/models/recipe-model';
@@ -80,20 +81,53 @@ const recipes = [
   { name: "Grilled Chicken", description: "Herb-marinated grilled chicken breast", author: "Chef John", activeTime: "15 min", totalTime: "30 min", thumbnail: "/images/recipes/grilled-chicken.jpg", image: "/images/recipes/grilled-chicken.jpg", category: "Grilled", serves: 4, rating: 4.7, steps: ["Marinate chicken", "Preheat grill", "Grill until done", "Rest and serve"] },
 ];
 
-export async function GET() {
+// Seeding used to be a GET that dropped the whole collection, so any crawler,
+// bot or link prefetch that touched this URL wiped the recipes. It is a POST
+// now, and it requires SEED_SECRET whenever that variable is set. With no
+// secret configured it only runs outside production, so a deployed site is
+// never seedable by an anonymous request.
+const isAuthorized = (request) => {
+  const secret = process.env.SEED_SECRET;
+  if (!secret) return process.env.NODE_ENV !== 'production';
+
+  const provided = request.headers.get('x-seed-secret') || '';
+  const a = Buffer.from(provided);
+  const b = Buffer.from(secret);
+  return a.length === b.length && timingSafeEqual(a, b);
+};
+
+export async function POST(request) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json(
+      { success: false, message: 'Unauthorized. Send the SEED_SECRET in the x-seed-secret header.' },
+      { status: 401 }
+    );
+  }
+
   try {
     await dbConnect();
 
-    // Clear existing recipes
-    await Recipe.deleteMany({});
+    // Upsert by name so re-seeding keeps each recipe's _id. Replacing the rows
+    // outright handed out new ids every run, which orphaned saved favorites
+    // and 404'd any recipe URL a user had bookmarked or shared.
+    const result = await Recipe.bulkWrite(
+      recipes.map((recipe) => ({
+        updateOne: { filter: { name: recipe.name }, update: { $set: recipe }, upsert: true },
+      }))
+    );
 
-    // Insert new recipes
-    const result = await Recipe.insertMany(recipes);
+    // Drop only recipes that are no longer part of the seed.
+    const { deletedCount } = await Recipe.deleteMany({
+      name: { $nin: recipes.map((r) => r.name) },
+    });
 
     return NextResponse.json({
       success: true,
-      message: `Successfully seeded ${result.length} recipes`,
-      count: result.length,
+      message: `Seeded ${recipes.length} recipes`,
+      count: recipes.length,
+      inserted: result.upsertedCount,
+      updated: result.modifiedCount,
+      removed: deletedCount,
       categories: [...new Set(recipes.map((r) => r.category))],
     }, { status: 200 });
   } catch (error) {
